@@ -6,7 +6,7 @@ import pandas as pd
 将kdj策略需要用到的信号生成器抽离出来
 """
 
-class CCISignal():
+class MacdCCISignal():
 
     def __init__(self):
         self.author = 'BrianLee'
