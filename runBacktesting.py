@@ -35,7 +35,7 @@ if __name__ == '__main__':
                     "symbol":"IF88:CTP",
                     "size" : 1, # 每点价值
                     "priceTick" : 0.01, # 最小价格变动
-                    "rate" : 1/10000, # 单边手续费
+                    "rate" : 5/10000, # 单边手续费
                     "slippage" : 0.1 # 滑价
                     },] 
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     
     ## 画图分析
     chartLog = pd.DataFrame(engine.strategy.chartLog).set_index('datetime')
-    mp = htmlplot.getXMultiPlot(engine, freq="30m")
-    mp.addLine(line=chartLog[['up', 'CCI', 'down']].reset_index(), colors={"up": "green","CCI": "red",'down':'blue'}, pos=0)
+    mp = htmlplot.getXMultiPlot(engine, freq="60m")
+    mp.addLine(line=chartLog[['CCI_short', 'CCI_long', 'macd']].reset_index(), colors={"CCI_short": "green","CCI_long": "red",'macd':'blue'}, pos=0)
     mp.resample()
     mp.show()
