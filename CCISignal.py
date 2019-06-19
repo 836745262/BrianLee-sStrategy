@@ -12,34 +12,34 @@ class CCISignal():
         self.author = 'BrianLee'
 
     def CCIsignal(self, am, paraDict):
-        CCIPeriod = paraDict["CCIPeriod"]
-        up = 120
-        down = -120
-        CCI = ta.CCI(am.high,am.low,am.close,CCIPeriod)
-
-        breakup = CCI[-1]>up and CCI[-2]<=up
-        breakdn = CCI[-1]<down and CCI[-2]>=down 
-        threshold = paraDict['threshold']
-        CrossSignal = 0
-        upcount = 0
-        downcount = 0
-        if breakup :
-            CrossSignal = 1
-            upcount += 1
-            if upcount == threshold:
-                CrossSignal = -1
-                upcount = 0
-        elif breakdn :
-            CrossSignal = -1
-            downcount += 1
-            if downcount == threshold:
-                CrossSignal = 1
-                downcount = 0
+        CCIshortPeriod = paraDict["CCIshortPeriod"]
+        CCIlongPeriod = paraDict["CCIlongPeriod"]
+        up = 100
+        down = -100
+        CCI_short = ta.CCI(am.high,am.low,am.close,CCIshortPeriod)
+        CCI_long = ta.CCI(am.high,am.low,am.close,CCIlongPeriod)
+        breakup = CCI_short[-1]>up and CCI_short[-2]<=up and CCI_long[-1]>up and CCI_long[-2]<=up
+        breakdn = CCI_short[-1]<down and CCI_short[-2]>=down and CCI_long[-1]<down and CCI_long[-2]>=down
+        return  CCI_short,CCI_long,breakup,breakdn       # cciCrossSignal, up,CCI,down
+    
+    
+    def macdSignal(self, am, paraDict):
+        short_win = paraDict['short_win']
+        long_win = paraDict['long_win']
+        macd_win = paraDict['macd_win']
+        DIFF,DEA,macd = ta.MACD(am.close, fastperiod=short_win, slowperiod=long_win, signalperiod=macd_win)
+        return macd
+    
+    def multiSignal(self,am,paraDict):
+        CCI_short,CCI_long,breakup,breakdn = self.CCIsignal(am, paraDict)
+        macd = self.macdSignal(am, paraDict)
+        multisignal = 0
+        if (CCI_short[-1]<0 and CCI_long[-1]<0 and macd[-1]>0) or breakup:
+            multisignal = 1
+        elif (CCI_short[-1]>0 and CCI_long[-1]>0 and macd[-1]<0) or breakdn:
+            multisignal = -1
         else:
-            CrossSignal = 0
-        
-
-        
-        return CrossSignal, up,CCI,down
+            multisignal = 0
+        return multisignal,CCI_short,CCI_long,macd
     
         
