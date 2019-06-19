@@ -1,5 +1,5 @@
 """
-这里的Demo是一个最简单的顺势策略实现
+这里的Demo是一个MACD+CCI顺势策略实现
 """
 from vnpy.trader.vtConstant import *
 from vnpy.trader.app.ctaStrategy import CtaTemplate
@@ -10,8 +10,8 @@ from CCISignal import CCISignal
 ########################################################################
 # 策略继承CtaTemplate
 class CCIStrategy(CtaTemplate):
-    """CCI策略Demo"""
-    className = 'CCIStrategy'
+    """MACD+CCI策略Demo"""
+    className = 'MACDCCIStrategy'
     author = 'BrianLee'
     
     # 策略变量
@@ -23,16 +23,17 @@ class CCIStrategy(CtaTemplate):
                  'timeframeMap',
                  # 取Bar的长度
                  'barPeriod',
-                 # 信号周期
-                 'CCIPeriod',
-                 # 信号周期
-                 "threshold",
+                 # CCI信号周期
+                 "CCIlongPeriod","CCIshortPeriod",
+                 # MACD信号周期
+                 'short_win','long_win','macd_win'
                  # 止损比例
                  'stoplossPct',
                  # 交易品种
                  'symbolList',
                  # 交易手数
                  'lot',
+                 # 加仓参数
                  "posTime", 'addPct'
                 ]    
     
@@ -48,12 +49,13 @@ class CCIStrategy(CtaTemplate):
         super().__init__(ctaEngine, setting)
         self.paraDict = setting
         self.symbol = self.symbolList[0]
+        
 
         self.chartLog = {
                 'datetime':[],
-                'up':[],
-                'CCI':[],
-                'down':[]
+                'CCI_short':[],
+                'CCI_long':[],
+                'macd':[]
                 }
 
     def prepare_data(self):
@@ -93,11 +95,11 @@ class CCIStrategy(CtaTemplate):
     
     def stoploss(self, bar):
         if self.posDict[self.symbol+'_LONG']>0:
-            if bar.low<self.transactionPrice*(1-self.stoplossPct):
+            if bar.low<self.transactionPrice*(1-self.paraDict["stoplossPct"]):
                 self.cancelAll()
                 self.sell(self.symbol, bar.close*0.99, self.posDict[self.symbol+'_LONG'])
         if self.posDict[self.symbol+'_SHORT']>0:
-            if bar.high>self.transactionPrice*(1+self.stoplossPct):
+            if bar.high>self.transactionPrice*(1+self.paraDict["stoplossPct"]):
                 self.cancelAll()
                 self.cover(self.symbol, bar.close*0.99, self.posDict[self.symbol+'_LONG'])
 
@@ -127,7 +129,7 @@ class CCIStrategy(CtaTemplate):
         CrossSignal = 0
         if arrayPrepared1:
             algorithm = CCISignal()
-            CrossSignal, up, CCI, down = algorithm.CCIsignal(amSignal, self.paraDict)
+            CrossSignal,CCI_short,CCI_long,macd = algorithm.multiSignal(amSignal, self.paraDict)
         return CrossSignal
 
     def exitOrder(self, bar, exitSig):
@@ -146,7 +148,7 @@ class CCIStrategy(CtaTemplate):
         entrySignal = 0
         if arrayPrepared1 :
             algorithm = CCISignal()
-            CrossSignal, up, CCI, down = algorithm.CCIsignal(amSignal, self.paraDict)
+            CrossSignal,CCI_short,CCI_long,macd = algorithm.multiSignal(amSignal, self.paraDict)
             
             if CrossSignal==1:
                 entrySignal = 1
@@ -156,13 +158,13 @@ class CCIStrategy(CtaTemplate):
                 entrySignal = 0
 
             self.chartLog['datetime'].append(datetime.strptime(amSignal.datetime[-1], "%Y%m%d %H:%M:%S"))
-            self.chartLog['up'].append(up)
-            self.chartLog['CCI'].append(CCI[-1])
-            self.chartLog['down'].append(down)
+            self.chartLog['CCI_short'].append(CCI_short[-1])
+            self.chartLog['CCI_long'].append(CCI_long[-1])
+            self.chartLog['macd'].append(macd[-1])
         return entrySignal
 
     def entryOrder(self, bar, entrySignal):
-        # 如果金叉时手头没有多头持仓
+        # 没有多头持仓
         if (entrySignal==1) and (self.posDict[self.symbol+'_LONG']==0):
             # 如果没有空头持仓，则直接做多
             if  self.posDict[self.symbol+'_SHORT']==0:
@@ -172,7 +174,7 @@ class CCIStrategy(CtaTemplate):
                 self.cancelAll() # 撤销挂单
                 self.cover(self.symbol, bar.close*1.01, self.posDict[self.symbol+'_SHORT']) 
                 self.buy(self.symbol, bar.close*1.01, self.lot)
-        # 如果死叉时手头没有空头持仓
+        # 没有空头持仓
         elif (entrySignal==-1) and (self.posDict[self.symbol+'_SHORT']==0):
             if self.posDict[self.symbol+'_LONG']==0:
                 self.short(self.symbol, bar.close*0.99, self.lot) # 成交价*0.99发送低价位的限价单，以最优市价卖出进场
