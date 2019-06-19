@@ -6,7 +6,7 @@ import pandas as pd
 from vnpy.trader.utils import htmlplot
 import json
 import os
-from CCIStrategy import CCIStrategy
+from MacdCCIStrategy import MacdCCIStrategy
 
 # 
 if __name__ == '__main__':
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
 
     # Bar回测
-    engine.initStrategy(CCIStrategy, setting)
+    engine.initStrategy(MacdCCIStrategy, setting)
     
     # 开始跑回测
     engine.runBacktesting()
