@@ -5,7 +5,7 @@ from vnpy.trader.vtConstant import *
 from vnpy.trader.app.ctaStrategy import CtaTemplate
 import talib as ta
 from datetime import datetime
-from CCISignal import MacdCCISignal
+from MacdCCISignal import MacdCCISignal
 
 ########################################################################
 # 策略继承CtaTemplate
