@@ -5,11 +5,11 @@ from vnpy.trader.vtConstant import *
 from vnpy.trader.app.ctaStrategy import CtaTemplate
 import talib as ta
 from datetime import datetime
-from CCISignal import CCISignal
+from CCISignal import MacdCCISignal
 
 ########################################################################
 # 策略继承CtaTemplate
-class CCIStrategy(CtaTemplate):
+class MacdCCIStrategy(CtaTemplate):
     """MACD+CCI策略Demo"""
     className = 'MACDCCIStrategy'
     author = 'BrianLee'
@@ -128,7 +128,7 @@ class CCIStrategy(CtaTemplate):
         arrayPrepared1, amSignal = self.arrayPrepared(signalPeriod)
         CrossSignal = 0
         if arrayPrepared1:
-            algorithm = CCISignal()
+            algorithm = MacdCCISignal()
             CrossSignal,CCI_short,CCI_long,macd = algorithm.multiSignal(amSignal, self.paraDict)
         return CrossSignal
 
@@ -147,7 +147,7 @@ class CCIStrategy(CtaTemplate):
         arrayPrepared1, amSignal = self.arrayPrepared(signalPeriod)
         entrySignal = 0
         if arrayPrepared1 :
-            algorithm = CCISignal()
+            algorithm = MacdCCISignal()
             CrossSignal,CCI_short,CCI_long,macd = algorithm.multiSignal(amSignal, self.paraDict)
             
             if CrossSignal==1:
