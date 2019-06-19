@@ -1,5 +1,5 @@
 """
-这里的Demo是一个最简单的双均线策略实现
+这里的Demo是一个最简单的顺势策略实现
 """
 from vnpy.trader.vtConstant import *
 from vnpy.trader.app.ctaStrategy import CtaTemplate
