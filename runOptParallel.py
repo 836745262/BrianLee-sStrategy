@@ -15,11 +15,8 @@ def setConfig(root=None):
         "endDate": "20190225 23:00:00",
         "dbName": "VnTrader_1Min_Db",
         "contract":[{
-                    "symbol":"IF88:CTP",
-                    "size" : 1, # 每点价值
-                    "priceTick" : 0.01, # 最小价格变动
-                    "rate" : 5/10000, # 单边手续费
-                    "slippage" : 0.1 # 滑价
+                    "slippage": 0.5,
+                    "rate": 0.0005,
                     }]
     }
     # 设置策略固定参数
@@ -29,7 +26,8 @@ def setConfig(root=None):
     }
     # 设置策略优化参数
     optimize.paramsSetting = {
-            "CCIPeriod": range(21,31)
+            "CCIshortPeriod": range(11,31,5),
+            "CCIlongPeriod": range(31,51,5)
     }
     path = os.path.split(os.path.realpath(__file__))[0]
     with open(path+"//CTA_setting.json") as f:
