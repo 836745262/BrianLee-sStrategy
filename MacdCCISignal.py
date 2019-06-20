@@ -20,7 +20,7 @@ class MacdCCISignal():
         CCI_long = ta.CCI(am.high,am.low,am.close,CCIlongPeriod)
         breakup = CCI_short[-1]>up and CCI_short[-2]<=up and CCI_long[-1]>up and CCI_long[-2]<=up
         breakdn = CCI_short[-1]<down and CCI_short[-2]>=down and CCI_long[-1]<down and CCI_long[-2]>=down
-        return  CCI_short,CCI_long,breakup,breakdn       # cciCrossSignal, up,CCI,down
+        return  CCI_short,CCI_long,breakup,breakdn       
     
     
     def macdSignal(self, am, paraDict):
