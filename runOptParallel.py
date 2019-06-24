@@ -11,11 +11,11 @@ def setConfig(root=None):
     optimize.root = root
     # 设置引擎参数
     optimize.engineSetting = {
-        "startDate": "20160603 10:00:00",
-        "endDate": "20190225 23:00:00",
+        "startDate": "20181130 00:00:00",
+        "endDate": "20190115 23:59:00",
         "dbName": "VnTrader_1Min_Db",
         "contract":[{
-                    "slippage": 0.5,
+                    "slippage": 0.1,
                     "rate": 0.0005,
                     }]
     }
